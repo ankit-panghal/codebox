@@ -1,0 +1,51 @@
+.recent-arenas-container{
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 50px;
+}
+ p{
+    margin-top: -10px;
+    margin-left: 20px;
+    color: rgb(171, 171, 171);
+    font-size:medium;
+}
+.arena-box{
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-image: linear-gradient(62deg, #ff9c62 0%, #F7CE68 100%);
+    border-radius: 5px;
+    color: black;
+    cursor: pointer;
+    gap: 15px;
+    transition: transform 300ms ease-in-out;
+}
+.arena-box:hover{
+    transform: translateY(-10px);
+}
+
+.arena-box > .bottom{
+display: flex; 
+justify-content: space-between;
+align-items: center;
+width: 100%;
+font-size: 1.2rem;
+}
+
+.arena-box svg:hover{
+    color: red;
+}
+
+@media (max-width : 750px) {
+    .recent-arenas-container{
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width : 620px) {
+    .recent-arenas-container{
+       display: flex;
+       flex-direction: column;
+    }
+}

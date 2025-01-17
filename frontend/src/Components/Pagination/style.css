@@ -1,0 +1,17 @@
+.MuiPagination-root{
+    display: flex;
+    justify-content: center;
+    margin-top: 5rem;
+}
+
+.MuiPagination-ul button , .MuiPagination-ul div{
+color: white !important;
+font-size: 1.3rem;
+}
+
+.MuiPagination-ul button:hover{
+    background-color: rgba(240, 248, 255, 0.315);
+}
+.Mui-selected{
+    background-color: grey !important;
+}

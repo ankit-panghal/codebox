@@ -1,0 +1,26 @@
+.modal-btn{
+    color: rgb(44, 241, 176) !important;
+    margin-top: 20px !important;
+    background-color: rgba(127, 255, 212, 0.25) !important;
+    border: 2px solid transparent !important;
+}
+.modal-btn:hover{
+    border-color: rgb(0, 255, 170) !important;
+}
+form{
+    display : flex;
+    gap : 20px;
+}
+
+@media screen and (max-width : 480px) {
+    .modal-container{
+        width: 90% !important;
+    }
+    form {
+        width: 100% !important;
+     flex-direction: column;
+    }
+    form > .btn{
+        padding: 10px !important;
+    }
+}
