@@ -16,7 +16,7 @@ const storage = multer.memoryStorage()
 const upload = multer({storage})
 
 app.use(cors({
-    origin : 'http://localhost:3000',
+    origin : 'https://codebox-01.netlify.app',
     credentials : true
 }))
 

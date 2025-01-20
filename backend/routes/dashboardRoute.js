@@ -64,18 +64,11 @@ dashboardRouter.get('/recent-arenas',isAuth,async(req,res) => {
     const totalArenas = await arenaModel.find({userId : user._id});
     const recentArenasPortion = await arenaModel.find({userId : user._id}).skip(SKIP).limit(LIMIT).exec();
     // console.log(recentArenasPortion)
-     if(recentArenasPortion.length === 0){
-        return res.status(204).json({
-            message : 'No arenas developed'
-        })
-     }
-     else{
         return res.status(200).json({
             message : 'Found arenas',
             portion : recentArenasPortion,
              total : totalArenas
         })
-     }
  }
  catch(error){
     return res.status(500).json({
@@ -85,7 +78,7 @@ dashboardRouter.get('/recent-arenas',isAuth,async(req,res) => {
  }
 })
 
-dashboardRouter.get('/get-arena/:id',async (req,res) => {
+dashboardRouter.get('/get-arena/:id',isAuth,async (req,res) => {
     const id= req.params.id;
     try{
     const arena = await arenaModel.findOne({_id : id});
@@ -104,7 +97,7 @@ dashboardRouter.get('/get-arena/:id',async (req,res) => {
 })
 
 
-dashboardRouter.post('/delete-arena',async (req,res) => {
+dashboardRouter.post('/delete-arena',isAuth,async (req,res) => {
     const {id} = req.body;
     try{
     await arenaModel.findOneAndDelete({_id : id});
@@ -120,15 +113,16 @@ dashboardRouter.post('/delete-arena',async (req,res) => {
     }
 })
 
-dashboardRouter.post('/save-files',async (req,res) => {
+dashboardRouter.post('/save-files',isAuth,async (req,res) => {
     const {id,html,css,js} = req.body;
     try{
-     await arenaModel.findByIdAndUpdate({_id : id},{
+         await arenaModel.findByIdAndUpdate({_id : id},{
          html,css,js
-      });
-      return res.status(201).json({
+         });
+        return res.status(201).json({
          message : 'Saved successfully'
-      })
+        
+        })
     }
     catch(error){
      return res.status(500).json({
