@@ -12,20 +12,21 @@ import PaginationComponent from '../Pagination';
 import { getArenas, getPageArenas } from '../../redux/arenasSlice';
 
 const RecentArenas = () => {
-  
   const skipState = useSelector(state => state.skip);
-  const {total,portion} = useSelector(state => state.arenas)
-  // console.log(skipState);
+  const {total,portion} = useSelector(state => state.arenas);
+  const [isDeleted,setIsDeleted] = useState(false)
   const [loading,setLoading] = useState(false);
-  const navigate = useNavigate();
-// console.log(data);
-const dispatch = useDispatch();
 
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  
   useEffect(() => {
   async function fetchData(){
     setLoading(true);
     try{  
      const response = await axios.get(hostName+`/dashboard/recent-arenas/?skip=${skipState}&limit=3`,{withCredentials : true});
+     console.log('response total',response.data.total)
+     console.log('response portion',response.data.portion)
         dispatch(getArenas(response.data.total))
         dispatch(getPageArenas(response.data.portion))
         setLoading(false);
@@ -36,38 +37,51 @@ const dispatch = useDispatch();
     }
   }
    fetchData();
-},[skipState])
+},[skipState,isDeleted])
 
- async function goToArena(id){
-      setLoading(true);
-     try{
-        const response = await axios.get(hostName+`/dashboard/get-arena/${id}`,
-          {withCredentials : true});
-          setLoading(false);
-          navigate('/dashboard/editor',{state : {data : response.data.data}})
-     }
-     catch(error){
-      setLoading(false);
-      console.log(error)
-     }
- }
+  useEffect(() => {
+    console.log('total',total);
+    console.log('portion',portion);
+    if(total && portion.length === 0){
+      console.log('inside')
+      dispatch(getPageArenas(total))
+    }
+  },[total,portion,isDeleted])
+
+  async function goToArena(id){
+        setLoading(true);
+      try{
+          const response = await axios.get(hostName+`/dashboard/get-arena/${id}`,
+            {withCredentials : true});
+            setLoading(false);
+            navigate('/dashboard/editor',{state : {data : response.data.data}})
+      }
+      catch(error){
+        setLoading(false);
+        console.log(error)
+      }
+  }
 
   async function handleArenaDeletion(e,id){
        e.stopPropagation();
     try{
-        const response = await axios.post(hostName+'/dashboard/delete-arena',{id});
+        const response = await axios.post(hostName+'/dashboard/delete-arena',{id},{withCredentials : true});
         toast.success(response.data.message);
-        window.location.reload();
+        if(isDeleted) {
+          setIsDeleted(prev => false)
+          setIsDeleted(prev => true)
+        }
+        else setIsDeleted(prev => true)
       }
    catch(error){
+    setIsDeleted(false)
     toast.error(error)
    }
   }
 
   return (<>
-  <Loader loading={loading}/>
     <div style={{margin : '50px 0 40px 0'}}>Recent Arenas</div>
-    { total ? 
+    { portion ? 
     <div className='recent-arenas-container'>
      {portion.map(item => {
         return <div key={item._id} className='arena-box' id={item._id} onClick={() => goToArena(item._id)}>
@@ -80,7 +94,8 @@ const dispatch = useDispatch();
      })}
     </div> 
     : <p>No arenas developed</p>}
-    <PaginationComponent/>
+    <PaginationComponent skipState={skipState} totalArenas={total}/>
+    <Loader loading={loading}/>
     </>  
   )
 }

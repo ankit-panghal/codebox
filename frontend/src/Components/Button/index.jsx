@@ -39,7 +39,7 @@ const ButtonComponent = ({name,bgColor,type,id,color,html,css,js}) => {
 
    async function handleSave(id,html,css,js){
         try{
-            const response = await axios.post(hostName+'/dashboard/save-files',{id,html,css,js});
+            const response = await axios.post(hostName+'/dashboard/save-files',{id,html,css,js},{withCredentials : true});
             toast.success(response.data.message); 
         }
         catch(error){
@@ -54,10 +54,8 @@ const ButtonComponent = ({name,bgColor,type,id,color,html,css,js}) => {
      if(name === 'Logout') handleLogout()
      if(name === 'Delete Account') handleAccountDeletion();
      if(name === 'Exit'){
-     const response = window.confirm('Have you saved the files ?');
-     if(response){
-        navigate('/dashboard')
-     }
+      const response = window.confirm('Have you saved the file ?');
+      if(response) navigate('/dashboard')
      }
      if(name === 'Save') handleSave(id,html,css,js)
   }

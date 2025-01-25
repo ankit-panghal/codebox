@@ -9,10 +9,10 @@ const arenasSlice = createSlice({
     initialState,
     reducers : {
         getArenas(state,action){
-         return {...state, total : action.payload}
+         state.total = action.payload
         },
         getPageArenas(state,action){
-             return {...state, portion : action.payload}
+        state.portion = action.payload
         }
     }
 })

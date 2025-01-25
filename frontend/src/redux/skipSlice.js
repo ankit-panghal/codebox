@@ -6,7 +6,7 @@ const skipSlice = createSlice({
    initialState,
    reducers : {
     manageSkips(state,action){
-     return state = action.payload
+     return action.payload
     }
    }
 })

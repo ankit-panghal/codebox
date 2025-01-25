@@ -43,7 +43,7 @@ font-size: 1.2rem;
     }
 }
 
-@media (max-width : 620px) {
+@media (max-width : 560px) {
     .recent-arenas-container{
        display: flex;
        flex-direction: column;

@@ -8,7 +8,6 @@ import hostName from "./domain"
         }
         catch(err){
             console.log(err);
-            
            return false;
         }
     }

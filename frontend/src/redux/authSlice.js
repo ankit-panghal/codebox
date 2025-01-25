@@ -6,7 +6,7 @@ const authSlice = createSlice({
     name : 'auth',
     reducers : {
         manageAuth : (state,action) => {
-            return state =  action.payload
+            return action.payload
         }
     }
 })
