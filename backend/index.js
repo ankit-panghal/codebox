@@ -29,6 +29,10 @@ const PORT = process.env.PORT || 3001;
 app.use('/auth', authRouter)
 app.use('/dashboard',dashboardRouter)
 
+app.get('/',(req,res) => {
+    res.send('It is woking')
+})
+
 app.post('/upload',isAuth,upload.single('image'), (req,res) => {
    const buffer = req.file.buffer;
 
