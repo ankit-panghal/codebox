@@ -82,7 +82,7 @@ authRouter.get('/logout',(req,res) => {
    res.clearCookie('token',{
     httpOnly: true,
     secure: true,
-    sameSite: 'none'
+    sameSite: 'None'
    });
     res.status(200).json({
         message : 'User logged out successfully'
