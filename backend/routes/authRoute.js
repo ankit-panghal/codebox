@@ -83,6 +83,7 @@ authRouter.get('/logout',(req,res) => {
     httpOnly: true,
     secure: true,
     sameSite: 'none',
+    expires : new Date(0),
     domain : 'codebox-backend.vercel.app',
     path : '/'
    });
