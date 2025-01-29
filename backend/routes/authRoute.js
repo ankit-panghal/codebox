@@ -83,6 +83,8 @@ authRouter.get('/logout',(req,res) => {
     httpOnly: true,
     secure: true,
     sameSite: 'none',
+    domain : 'codebox-backend.vercel.app',
+    path : '/'
    });
     res.status(200).json({
         message : 'User logged out successfully'
