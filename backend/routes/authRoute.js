@@ -53,8 +53,7 @@ authRouter.post('/login',async (req,res) => {
                      httpOnly : true,
                      secure : true,
                      sameSite : 'none',
-                     partitioned : true
-                })  
+                }) 
                 return res.status(200).json({
                     message : 'User logged in successfully',
                 })
