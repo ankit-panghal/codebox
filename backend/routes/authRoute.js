@@ -50,9 +50,10 @@ authRouter.post('/login',async (req,res) => {
                 await userModel.findOneAndUpdate({email});
                 const token = generateToken(email);
                 res.cookie('token',token,{
-                    httpOnly : true,
+                     httpOnly : true,
                      secure : true,
-                      sameSite : 'none'
+                     sameSite : 'none',
+                     partitioned: true 
                 })  
                 return res.status(200).json({
                     message : 'User logged in successfully',
@@ -83,7 +84,6 @@ authRouter.get('/logout',(req,res) => {
     httpOnly: true,
     secure: true,
     sameSite: 'none',
-    partitioned: true 
    });
     res.status(200).json({
         message : 'User logged out successfully'
