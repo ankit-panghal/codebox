@@ -84,7 +84,7 @@ authRouter.get('/logout',(req,res) => {
     secure: true,
     sameSite: 'none',
      expires : new Date(0),
-    domain : 'https://codebox-backend.vercel.app',
+    domain : 'codebox-backend.vercel.app',
     path : '/'
    });
     res.status(200).json({
