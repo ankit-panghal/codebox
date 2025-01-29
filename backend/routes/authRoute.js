@@ -82,7 +82,9 @@ authRouter.get('/logout',(req,res) => {
    res.clearCookie('token',{
     httpOnly: true,
     secure: true,
-    sameSite: 'None'
+    sameSite: 'none',
+    domain: 'codebox-backend.vercel.app', // Must match original cookie
+    path: '/'
    });
     res.status(200).json({
         message : 'User logged out successfully'
