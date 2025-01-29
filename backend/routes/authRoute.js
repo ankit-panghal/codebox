@@ -79,7 +79,7 @@ authRouter.post('/login',async (req,res) => {
 })
 
 authRouter.get('/logout',(req,res) => {
-   res.cookie('token',,'',{
+   res.cookie('token','',{
     httpOnly: true,
     secure: true,
     sameSite: 'none',
