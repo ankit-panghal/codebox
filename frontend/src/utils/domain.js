@@ -1,2 +1,2 @@
-const hostName = 'http://localhost:3001';
+const hostName = 'https://codebox-backend.vercel.app';
 export default hostName;
