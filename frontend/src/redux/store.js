@@ -1,13 +1,28 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import {persistStore,persistReducer,FLUSH,REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
 import skipReducer from './skipSlice';
-import arenasReducer from './arenasSlice'
 import authReducer from './authSlice'
-const  store = configureStore({
-reducer : {
-    skip : skipReducer,
-    arenas : arenasReducer,
-    auth : authReducer
+import apiSlice from './apiSlice';
+
+const persistConfig = {
+    key : 'root',
+    storage,
 }
+
+const persistedReducer = persistReducer(persistConfig,combineReducers({
+    skip : skipReducer,
+    auth: authReducer,
+    [apiSlice.reducerPath]: apiSlice.reducer,
+}))
+const  store = configureStore({
+    reducer : persistedReducer,
+    middleware : (mid) => mid({
+        serializableCheck : {
+            ignoreActions : [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
+        }
+    }).concat(apiSlice.middleware)
 })
 
-export default store;
+const persistor = persistStore(store)
+export {store,persistor}

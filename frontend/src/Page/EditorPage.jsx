@@ -13,7 +13,7 @@ const EditorPage = () => {
   const navigate = useNavigate();
      
    useEffect(() => {
-    console.log(location?.state?.data); 
+    // console.log(location?.state?.data); 
     if(!location.state) navigate('/dashboard');
     else setData(location.state.data);
   },[])

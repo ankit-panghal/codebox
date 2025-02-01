@@ -8,12 +8,12 @@ import CloseIcon from '@mui/icons-material/Close';
 import SideProfile from '../Components/SideProfile';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import HomeHeader from '../Components/HomeHeader';
 
 const menuStyle = {
   position : 'fixed', 
-  top : '20px',
-  left : '50%',
-  transform : 'translateX(-50%)',
+  top : '10vh',
+  right : '20px',
   backgroundColor : 'white',
   borderRadius : '50%',
   padding : '5px',
@@ -21,17 +21,34 @@ const menuStyle = {
   cursor : 'pointer',
   zIndex : 1000,
 }
+
+const forkedHtml = sessionStorage.getItem('forked_html')
+const forkedCss = sessionStorage.getItem('forked_css')
+const forkedJs = sessionStorage.getItem('forked_js')
+const forkedArenaName = sessionStorage.getItem('forked_arenaName')
+
 const DashboardPage = () => {
   const [data,setData] = useState(null);
     const [loading,setLoading] = useState(false);
     const [isOpen,setIsOpen] = useState(false);
     const navigate = useNavigate();
     
+   
+
     useEffect(() => {
       (async function(){
         setLoading(true);
+        
         try{
-          const response = await axios.get(hostName+'/dashboard',{withCredentials : true})
+          if(forkedHtml || forkedCss || forkedJs){
+             await axios.post(hostName+'/dashboard/save-forked-files',{forkedFiles : {forkedHtml,forkedCss,forkedJs,forkedArenaName}},{
+              headers : { Authorization : `Bearer ${localStorage.getItem('token')}`}
+            })
+            sessionStorage.clear()
+           } 
+          const response = await axios.get(hostName+'/dashboard',{
+            headers : { Authorization : `Bearer ${localStorage.getItem('token')}`}
+          })
             setData(response.data.data)
             setLoading(false)
         }
@@ -43,7 +60,7 @@ const DashboardPage = () => {
     })()
   },[])
 
-
+  
   return (<>
   <Loader loading={loading}/>
    {data && <div className='dash-page'>
@@ -53,9 +70,11 @@ const DashboardPage = () => {
     </div>
     <SideProfile data={data} isOpen={isOpen}/>
       <div className='arena-container'>
-       <div>Work Arena</div>
-         <CreateArena/>
-         <RecentArenas/>  
+        <HomeHeader/>
+        <div style={{padding : '0 40px'}}>
+          <CreateArena/>
+          <RecentArenas/>  
+        </div>
       </div>
     </div>}
     </>

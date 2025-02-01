@@ -5,6 +5,8 @@ import PrivateRoute from './Components/PrivateRoute';
 import { Suspense } from 'react';
 import Loader from './Components/Loader';
 import NotFoundPage from './Page/NotFoundPage';
+import SharePage from './Page/SharePage';
+import ExplorePage from './Page/ExplorePage';
 
 const HomePage = lazy(() => import('./Page/HomePage'))
 const SignupPage = lazy(() => import('./Page/SignupPage'));
@@ -18,12 +20,14 @@ function App() {
          <Suspense fallback={<Loader loading={true}/>}>
         <Routes>
         <Route element = {<PrivateRoute/>}>
-          <Route path='/' element={<HomePage/>} />
-          <Route path='/signup' element={<SignupPage/>}/>
-          <Route path='/login' element={<LoginPage />}/>
-          <Route path='/dashboard' element={<DashboardPage/>}/>
-          <Route path='/dashboard/editor' element={<EditorPage/>}/>
-          </Route>
+            <Route path='/' element={<HomePage/>} />
+            <Route path='/signup' element={<SignupPage/>}/>
+            <Route path='/login' element={<LoginPage />}/>
+            <Route path='/dashboard' element={<DashboardPage/>}/>
+            <Route path='/dashboard/editor' element={<EditorPage/>}/>
+        </Route>
+        <Route path='/arena/:id' element={<SharePage/>}/>
+        <Route path='/explore' element={<ExplorePage/>}/>
         <Route path='/*' element={<NotFoundPage/>}/>
         </Routes>
         </Suspense>

@@ -4,11 +4,10 @@ import {Modal} from '@mui/material'
 import React, { useState } from 'react'
 import ButtonComponent from '../Button';
 import './style.css';
-import axios from 'axios';
-import hostName from '../../utils/domain';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../Loader';
+import { useCreateUserArenaMutation } from '../../redux/apiSlice';
 
 const style = {
   position: 'absolute',
@@ -25,7 +24,7 @@ const style = {
 
 const ModalComponent = ({name,open,handleOpen,handleClose}) => {
      const [arenaName,setArenaName] = useState('');
-     const [loading,setLoading] = useState(false);
+     const [createArena,{isLoading}] = useCreateUserArenaMutation()
      const navigate = useNavigate();
 
     async function handleCreation(e){
@@ -34,17 +33,13 @@ const ModalComponent = ({name,open,handleOpen,handleClose}) => {
         toast.error('Arena name should have length greater than 5')
         return;
       }
-      setLoading(true);
        try{
-           const response = await axios.post(hostName+'/dashboard/create-arena',{arenaName},
-            {withCredentials : true});
-            setLoading(false);
-            toast.success(response.data.message);
-            navigate('/dashboard/editor',{state : {data : response.data.data}})
+           const response =  await createArena({arenaName}).unwrap();
+           toast.success(response.message)
+            navigate('/dashboard/editor',{state : {data : response.data}})
        }
        catch(error){
-        console.log(error);
-        setLoading(false);
+        toast.error(error.data.message)
        }
      }
 
@@ -64,7 +59,7 @@ const ModalComponent = ({name,open,handleOpen,handleClose}) => {
           </form>
         </Box>
       </Modal>
-       <Loader loading={loading}/>
+       <Loader loading={isLoading}/>
     </>
   )
 }

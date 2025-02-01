@@ -12,15 +12,10 @@ const Editor = ({bgColor,symbol,name,value,setValue}) => {
     const [openEditor,setOpenEditor] = useState(false)
      
 
-    async function handleCopy(){
-      try{
-      await navigator.clipboard.writeText(value);
+     function handleCopy(){
+       navigator.clipboard.writeText(value);
       toast.success('Copied successfully')
-      }
-      catch(err){
-        console.log(err.message);
-        
-      }
+    
     }
    function handleOpenClose(){
     setOpenEditor(prev => !prev)

@@ -13,21 +13,24 @@
     padding: 15px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    background-image: linear-gradient(62deg, #ff9c62 0%, #F7CE68 100%);
+    background-color: rgba(75, 75, 75, 0.8);
     border-radius: 5px;
-    color: black;
+    color: white;
     cursor: pointer;
     gap: 15px;
     transition: transform 300ms ease-in-out;
+    height: 35vh;
 }
 .arena-box:hover{
     transform: translateY(-10px);
 }
 
+.arena-box iframe{
+    height: 100%;
+}
 .arena-box > .bottom{
 display: flex; 
-justify-content: space-between;
+justify-content: space-between !important;
 align-items: center;
 width: 100%;
 font-size: 1.2rem;

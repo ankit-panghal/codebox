@@ -26,7 +26,11 @@ const UploadFile = ({data}) => {
 
        try{
         setLoading(true)
-         const response = await axios.post(hostName+'/upload',formData,{withCredentials : true})
+         const response = await axios.post(hostName+'/upload',formData,{
+            headers : {
+              Authorization : `Bearer ${localStorage.getItem('token')}`
+            }
+         })
          console.log(response)
          setLoading(false)
          toast.success(response.data.message)

@@ -1,4 +1,3 @@
-import React, { useEffect } from 'react'
 import { useState } from 'react'
 import Input from '../Components/Input';
 import ButtonComponent from '../Components/Button';
@@ -7,6 +6,9 @@ import { useNavigate } from 'react-router-dom';
 import hostName from '../utils/domain';
 import Loader from '../Components/Loader';
 import toast from 'react-hot-toast';
+import HomeHeader from '../Components/HomeHeader';
+import { useDispatch } from 'react-redux';
+import { manageAuth } from '../redux/authSlice';
 
 const SignupPage = () => {
   const [name,setName] = useState('');
@@ -15,24 +17,27 @@ const SignupPage = () => {
   const [loading,setLoading] = useState(false);
 
      const navigate = useNavigate()
-
+     const dispatch = useDispatch()
  async function handleSubmit(e){
     setLoading(true);
     e.preventDefault();
     try{
       const response = await axios.post(hostName+'/auth/signup',{name,email,password});
-        setLoading(false);
+        localStorage.setItem('token',response.data.token)
+        dispatch(manageAuth(true))
         toast.success(response.data.message)
-        navigate('/login')
+        navigate('/dashboard')
+        setLoading(false);
     }
     catch(err){
       setLoading(false)
-      toast.error(err.response.data.error)
+      toast.error(err.response.data.message);
     }
   }
 
-  return (<>
-  <Loader loading={loading}/>
+  return (<div className='signup-page'>
+      <Loader loading={loading}/>
+      <HomeHeader/>
     <div className='form-container'>
      <form onSubmit={handleSubmit}>
       <h1 style={{textAlign : 'center'}}>Signup</h1>
@@ -43,7 +48,7 @@ const SignupPage = () => {
      </form>
      <p onClick={() => navigate('/login')}>Already have an account? Login here.</p>
     </div>
-    </>
+    </div>
   )
 }
 

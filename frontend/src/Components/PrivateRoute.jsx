@@ -6,7 +6,6 @@ import { useSelector,useDispatch } from 'react-redux';
 import {manageAuth} from '../redux/authSlice'
 const PrivateRoute = () => {
     const isAuthenticated = useSelector(state => state.auth)
-    
     const [loading,setLoading] = useState(true);
     
     const location = useLocation()

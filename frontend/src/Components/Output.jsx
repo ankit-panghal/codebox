@@ -5,8 +5,11 @@
       <html>
       <head>
       <style>
+      ::-webkit-scrollbar {
+      width: 0px;
+      }
       body{
-        height : 'auto'
+      overflow-x : hidden
       }
       </style>
       <style>${css}</style>

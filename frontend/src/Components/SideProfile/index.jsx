@@ -11,7 +11,7 @@ const SideProfile = ({data,isOpen}) => {
     <UploadFile data={data}/>
     <div>Hi! <span className='user_name'>{data.name}</span></div>
      <div className='out-btns'>
-     <ButtonComponent name={'Logout'}/>
+     <ButtonComponent name={'Logout'} bgColor={'#0496FF'}/>
      <ButtonComponent name={'Delete Account'} id={data._id} bgColor={'crimson'}/>
      </div>
      </div>

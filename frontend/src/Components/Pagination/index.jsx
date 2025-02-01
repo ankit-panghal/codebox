@@ -15,7 +15,7 @@ import { manageSkips } from '../../redux/skipSlice';
       }
       
     return (
-      totalArenas && totalArenas.length > 3 && <Pagination page={selectedPage} count={Math.floor(totalArenas.length/3) + 1} shape="rounded" onChange={handleChange}/>
+      totalArenas > 3 && <Pagination page={selectedPage} count={Math.floor(totalArenas/3) + 1} shape="rounded" onChange={handleChange}/>
     ) 
   }
 

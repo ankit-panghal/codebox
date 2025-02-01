@@ -1,101 +1,69 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux'
-import hostName from '../../utils/domain';
 import Loader from '../Loader';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import './style.css'
 import toast from 'react-hot-toast';
 import Output from '../Output';
 import PaginationComponent from '../Pagination';
-import { getArenas, getPageArenas } from '../../redux/arenasSlice';
+import { manageSkips } from '../../redux/skipSlice';
+import {  useDeleteUserArenaMutation, useGetUserArenasQuery, useLazyGetArenaQuery } from '../../redux/apiSlice';
 
 const RecentArenas = () => {
   const skipState = useSelector(state => state.skip);
-  const {total,portion} = useSelector(state => state.arenas);
-  const [isDeleted,setIsDeleted] = useState(false)
-  const [loading,setLoading] = useState(false);
-
+  const{data,isLoading} = useGetUserArenasQuery(skipState)
+  const [trigger,{isLoading : loading}] = useLazyGetArenaQuery()
+  const [deleteArena] = useDeleteUserArenaMutation()
+  
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  console.log('inside')
   
   useEffect(() => {
-  async function fetchData(){
-    setLoading(true);
-    try{  
-     const response = await axios.get(hostName+`/dashboard/recent-arenas/?skip=${skipState}&limit=3`,{withCredentials : true});
-     console.log('response total',response.data.total)
-     console.log('response portion',response.data.portion)
-        dispatch(getArenas(response.data.total))
-        dispatch(getPageArenas(response.data.portion))
-        setLoading(false);
-    }
-    catch(error){
-      setLoading(false);
-      console.log(error.message);
-    }
-  }
-   fetchData();
-},[skipState,isDeleted])
+    if(data?.userPortion?.length === 0) dispatch(manageSkips(skipState-3 < 0 ? 0 : skipState-3))
+  },[data?.userPortion])
 
-  useEffect(() => {
-    console.log('total',total);
-    console.log('portion',portion);
-    if(total && portion.length === 0){
-      console.log('inside')
-      dispatch(getPageArenas(total))
-    }
-  },[total,portion,isDeleted])
 
   async function goToArena(id){
-        setLoading(true);
       try{
-          const response = await axios.get(hostName+`/dashboard/get-arena/${id}`,
-            {withCredentials : true});
-            setLoading(false);
-            navigate('/dashboard/editor',{state : {data : response.data.data}})
+          const response = await trigger(id)
+          navigate('/dashboard/editor',{state : {data : response.data.data}})
       }
       catch(error){
-        setLoading(false);
         console.log(error)
       }
   }
 
   async function handleArenaDeletion(e,id){
-       e.stopPropagation();
+    e.stopPropagation();
     try{
-        const response = await axios.post(hostName+'/dashboard/delete-arena',{id},{withCredentials : true});
-        toast.success(response.data.message);
-        if(isDeleted) {
-          setIsDeleted(prev => false)
-          setIsDeleted(prev => true)
-        }
-        else setIsDeleted(prev => true)
+        const response = await deleteArena({id}).unwrap()
+        toast.success(response.message);
       }
    catch(error){
-    setIsDeleted(false)
-    toast.error(error)
+    console.log(error)
    }
   }
 
   return (<>
-    <div style={{margin : '50px 0 40px 0'}}>Recent Arenas</div>
-    { portion ? 
+    <div style={{margin : '50px 0 20px 0',fontSize : '2em'}}>Recent Arenas</div>
+    { data?.userTotal > 0 ? 
     <div className='recent-arenas-container'>
-     {portion.map(item => {
+     {data?.userPortion.map(item => {
         return <div key={item._id} className='arena-box' id={item._id} onClick={() => goToArena(item._id)}>
           <Output html={item.html} css={item.css} js={item.js} preview={true} />
           <div className='bottom'>
          <span>{item.arenaName}</span>
-         <DeleteOutlineRoundedIcon htmlColor='black' fontSize='2rem' onClick={(e) => handleArenaDeletion(e,item._id)}/>
+         <DeleteOutlineRoundedIcon htmlColor='white' fontSize='2rem' onClick={(e) => handleArenaDeletion(e,item._id)}/>
          </div>
         </div>
      })}
     </div> 
     : <p>No arenas developed</p>}
-    <PaginationComponent skipState={skipState} totalArenas={total}/>
-    <Loader loading={loading}/>
+       <PaginationComponent skipState={skipState} totalArenas={data?.userTotal}/>
+       <Loader loading={isLoading || loading}/>
     </>  
   )
 }

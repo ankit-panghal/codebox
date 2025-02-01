@@ -2,7 +2,7 @@
 .side-profile{
     position: fixed;
     z-index: 100;
-    background-color: #112733;
+    background-color: #1f1f1f;
     padding-top: 15vh;
     width: 100%;
     display: flex;
@@ -28,8 +28,8 @@
   
 .upload-box{
   width : 15vw;
-   height : 15vw;
-   position: relative;
+  height : 15vw;
+  position: relative;
    border-radius: 50%;
 }
 
@@ -56,4 +56,16 @@
   
 .user_name{
   color:aquamarine;
+}
+.side-profile button:first-of-type{
+  font-size: 0.7em !important;
+}
+.out-btns > .btn{
+  font-size: 0.6em !important;
+}
+@media screen and (max-width : 768px) {
+  .upload-box{
+    width : 30vw;
+    height : 30vw;
+  }
 }
