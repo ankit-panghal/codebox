@@ -21,7 +21,8 @@ const arenaSchema = new mongoose.Schema({
         default : ''
     },
     userId : {
-        type : Object,
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'users',
         require : true
     }
 })

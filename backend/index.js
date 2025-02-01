@@ -9,6 +9,7 @@ import 'dotenv/config'
 import isAuth from './middlewares/isAuth.js'
 import multer from 'multer'
 import userModel from './models/userModel.js'
+import arenaModel from './models/arenaModel.js'
 
 const app = express();
 
@@ -16,7 +17,7 @@ const storage = multer.memoryStorage()
 const upload = multer({storage})
 
 app.use(cors({
-    origin : 'https://codebox-01.netlify.app',
+    origin : 'http://localhost:3000',
     credentials : true
 }))
 
@@ -32,7 +33,10 @@ app.use('/dashboard',dashboardRouter)
 app.get('/',(req,res) => {
     res.send('It is woking')
 })
-
+app.get('/explore',async (req,res) => {
+    const arenas = await arenaModel.find().sort({ _id: -1 }).populate('userId');
+    return res.status(200).json(arenas);
+})
 app.post('/upload',isAuth,upload.single('image'), (req,res) => {
    const buffer = req.file.buffer;
 
@@ -64,6 +68,18 @@ app.post('/upload',isAuth,upload.single('image'), (req,res) => {
 })
 })
 
+app.get('/share/:id',async (req,res) => {
+    const id = req.params.id;
+    const arena = await arenaModel.findById(id);
+    if(!arena){
+        return res.status(404).json({message : 'Arena not found'});
+    }
+    else{
+        return res.status(200).json(arena);
+    }
+})
 app.listen(PORT,() => {
     console.log(`Server running on port : ${PORT}`);
 })
+
+export default app

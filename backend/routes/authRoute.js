@@ -26,8 +26,10 @@ authRouter.post('/signup',async (req,res) => {
         } 
         const hashedPass = await encryptPass(password);
         await userModel.create({name,email,password : hashedPass}) 
+        const token = generateToken(email);
         return res.status(201).json({
         message : 'User created successfully',
+        token
       })
    }
    catch(error){
@@ -45,17 +47,13 @@ authRouter.post('/login',async (req,res) => {
         await validateCredentials({email,password,mode : 'login'})
         const userExists = await userModel.findOne({email});
         if(userExists){
+
             const isMatchedPass = decryptPass(password,userExists.password);
             if(isMatchedPass){
-                await userModel.findOneAndUpdate({email});
                 const token = generateToken(email);
-                res.cookie('token',token,{
-                    httpOnly : true,
-                     secure : true,
-                      sameSite : 'none'
-                })  
                 return res.status(200).json({
                     message : 'User logged in successfully',
+                    token
                 })
             }
             else {
@@ -78,15 +76,4 @@ authRouter.post('/login',async (req,res) => {
     }
 })
 
-authRouter.get('/logout',(req,res) => {
-   res.cookie('token', '', {
-        httpOnly: true, 
-        secure: true,   
-        sameSite: 'strict', 
-        expires: new Date(0) 
-    });
-    res.status(200).json({
-        message : 'User logged out successfully'
-    })
-})
 export default authRouter

@@ -3,10 +3,10 @@ import { verifyToken } from "../utils/token.js";
 
    async function isAuth(req,res,next){
       try{
-      const token=  req.headers?.cookie?.split('=')[1];
+      const token=  req.headers.authorization.split(' ')[1];
       const decoded = await verifyToken(token);
       const userEmail = decoded.user;
-    
+       
        const user = await userModel.findOne({email : userEmail});
        if(user){
           req.user = user

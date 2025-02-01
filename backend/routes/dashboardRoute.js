@@ -16,6 +16,15 @@ dashboardRouter.get('/',isAuth,async (req,res) => {
     })
 })
 
+dashboardRouter.post('/save-forked-files',isAuth,async (req,res) => {
+    const userId = req.user._id
+   const {forkedHtml,forkedCss,forkedJs,forkedArenaName} = req.body.forkedFiles
+   await arenaModel.create({ userId,arenaName : forkedArenaName, html : forkedHtml, css : forkedCss, js : forkedJs})
+   res.status(200).json({
+    message : 'Forked successfully'
+   })
+})
+
 dashboardRouter.post('/create-arena',isAuth,async (req,res) => {
     const {arenaName} = req.body;
     const user = req.user;
@@ -44,7 +53,6 @@ dashboardRouter.post('/delete-account',isAuth,async (req,res) => {
     try{
         await userModel.findByIdAndDelete({_id : id});
         await arenaModel.deleteMany({userId : id})
-        res.cookie('token','')
         return res.status(200).json({
             message : 'User account deleted successfully'
         })
@@ -63,11 +71,10 @@ dashboardRouter.get('/recent-arenas',isAuth,async(req,res) => {
     const user = req.user
     const totalArenas = await arenaModel.find({userId : user._id});
     const recentArenasPortion = await arenaModel.find({userId : user._id}).skip(SKIP).limit(LIMIT).exec();
-    // console.log(recentArenasPortion)
         return res.status(200).json({
             message : 'Found arenas',
-            portion : recentArenasPortion,
-             total : totalArenas
+            userPortion : recentArenasPortion,
+             userTotal : totalArenas.length
         })
  }
  catch(error){
@@ -100,7 +107,7 @@ dashboardRouter.get('/get-arena/:id',isAuth,async (req,res) => {
 dashboardRouter.post('/delete-arena',isAuth,async (req,res) => {
     const {id} = req.body;
     try{
-    await arenaModel.findOneAndDelete({_id : id});
+    await arenaModel.findByIdAndDelete(id)
     return res.status(200).json({
         message : 'Arena deleted successfully',
     })
