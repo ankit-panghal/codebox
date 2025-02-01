@@ -57,7 +57,7 @@ app.post('/upload',isAuth,upload.single('image'), (req,res) => {
                 const imagePublicId = user.imageUrl.split('/').slice(-3).join('/').split('.')[0]
                 await cloudinary.uploader.destroy(imagePublicId)
             }
-               await userModel.findByIdAndUpdate(req.user._id,imageUrl : result.secure_url);
+               await userModel.findByIdAndUpdate(req.user._id,{imageUrl : result.secure_url});
         })()
     }
   }).end(buffer);
