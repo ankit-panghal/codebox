@@ -59,8 +59,10 @@ app.post('/upload',isAuth,upload.single('image'), (req,res) => {
                 await cloudinary.uploader.destroy(imagePublicId)
             }
                user.imageUrl = result.secure_url;
-              console.log('result_url',result.secure_url)
-            await user.save()
+               await user.save()
+              res.status(200).json({
+                message : 'Uploaded successfully'
+              })
             }
             catch(err){
                 console.log(err)
@@ -68,10 +70,6 @@ app.post('/upload',isAuth,upload.single('image'), (req,res) => {
         })()
     }
   }).end(buffer);
-
-  return res.status(200).json({
-    message : 'Uploaded successfully'
-})
 })
 
 app.get('/share/:id',async (req,res) => {
