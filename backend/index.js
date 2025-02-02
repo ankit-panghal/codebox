@@ -52,12 +52,19 @@ app.post('/upload',isAuth,upload.single('image'), (req,res) => {
       return res.status(500).json({ message: 'Error uploading image' });
     } else {
         (async function(){
+            try{
             const user =  await userModel.findById(req.user._id);
             if(user.imageUrl){
                 const imagePublicId = user.imageUrl.split('/').slice(-3).join('/').split('.')[0]
                 await cloudinary.uploader.destroy(imagePublicId)
             }
-               await userModel.findByIdAndUpdate(req.user._id,{imageUrl : result.secure_url});
+               user.imageUrl = result.secure_url;
+              console.log('result_url',result.secure_url)
+            await user.save()
+            }
+            catch(err){
+                console.log(err)
+            }
         })()
     }
   }).end(buffer);
