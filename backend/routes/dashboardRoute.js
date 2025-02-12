@@ -19,7 +19,8 @@ dashboardRouter.get('/',isAuth,async (req,res) => {
 dashboardRouter.post('/save-forked-files',isAuth,async (req,res) => {
     const userId = req.user._id
    const {forkedHtml,forkedCss,forkedJs,forkedArenaName} = req.body.forkedFiles
-   await arenaModel.create({ userId,arenaName : forkedArenaName, html : forkedHtml, css : forkedCss, js : forkedJs})
+   const arena = await arenaModel.create({ userId,arenaName : forkedArenaName, html : forkedHtml, css : forkedCss, js : forkedJs})
+   await userModel.findByIdAndUpdate(userId,{$push : {arenas : arena}})
    res.status(200).json({
     message : 'Forked successfully'
    })
@@ -36,6 +37,7 @@ dashboardRouter.post('/create-arena',isAuth,async (req,res) => {
             })
         }
         const arena =  await arenaModel.create({arenaName,userId : user._id});
+        await userModel.findByIdAndUpdate(user._id,{$push : {arenas : arena._id}})
         return res.status(201).json({
             message : 'Arena created successfully',
             data : arena
@@ -67,14 +69,15 @@ dashboardRouter.post('/delete-account',isAuth,async (req,res) => {
 dashboardRouter.get('/recent-arenas',isAuth,async(req,res) => {
     const SKIP = parseInt(req.query.skip);
     const LIMIT = parseInt(req.query.limit);
- try{
-    const user = req.user
-    const totalArenas = await arenaModel.find({userId : user._id});
-    const recentArenasPortion = await arenaModel.find({userId : user._id}).skip(SKIP).limit(LIMIT).exec();
-        return res.status(200).json({
+    try{
+        const userId = req.user._id
+        const populatedUser = await userModel.findOne({_id : userId}).populate('arenas');
+    const totalArenas = populatedUser.arenas
+    const recentArenasPortion = totalArenas.slice(SKIP,SKIP+LIMIT)
+    return res.status(200).json({
             message : 'Found arenas',
             userPortion : recentArenasPortion,
-             userTotal : totalArenas.length
+             userTotal : totalArenas?.length
         })
  }
  catch(error){
@@ -107,7 +110,9 @@ dashboardRouter.get('/get-arena/:id',isAuth,async (req,res) => {
 dashboardRouter.post('/delete-arena',isAuth,async (req,res) => {
     const {id} = req.body;
     try{
+        
     await arenaModel.findByIdAndDelete(id)
+    await userModel.findOneAndUpdate({_id : req.user._id},{$pull : {arenas : id}})
     return res.status(200).json({
         message : 'Arena deleted successfully',
     })

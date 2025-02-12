@@ -16,7 +16,15 @@ const userSchema = new mongoose.Schema({
     },
     imageUrl :{
         type : String
-    }
+    },
+    isVerified : {
+       default : false,
+       type : Boolean
+    },
+    arenas : [{
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'arenas',
+    }]
 })
 
 const userModel = mongoose.model('users',userSchema);

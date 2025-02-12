@@ -17,7 +17,7 @@ const storage = multer.memoryStorage()
 const upload = multer({storage})
 
 app.use(cors({
-    origin : 'https://codebox-01.netlify.app',
+    origin : process.env.FRONTEND_URL,
     credentials : true
 }))
 
@@ -39,33 +39,31 @@ app.get('/explore',async (req,res) => {
 })
 app.post('/upload',isAuth,upload.single('image'), (req,res) => {
    const buffer = req.file.buffer;
-
+    
    cloudinary.uploader.upload_stream({ 
     resource_type: "image", 
     folder : `codebox_profile_photos/${req.user._id}`, 
     width : 500,
     quality : "auto",
      fetch_format: "auto"
-    }, (error, result) => {
+    }, async (error, result) => {
     if (error) {
       console.error(error);
       return res.status(500).json({ message: 'Error uploading image' });
-    } else {
-        (async function(){
-            const user =  await userModel.findById(req.user._id);
-            if(user.imageUrl){
-                const imagePublicId = user.imageUrl.split('/').slice(-3).join('/').split('.')[0]
-                await cloudinary.uploader.destroy(imagePublicId)
-            }
-                user.imageUrl = result.secure_url;
-                await user.save();
-        })()
-    }
-  }).end(buffer);
+    } 
+      const user = await userModel.findById(req.user._id);
 
-  return res.status(200).json({
-    message : 'Uploaded successfully'
-})
+      if (user.imageUrl) {
+        const imagePublicId = user.imageUrl.split('/').slice(-3).join('/').split('.')[0];
+        await cloudinary.uploader.destroy(imagePublicId);
+    }
+
+    user.imageUrl = result.secure_url;
+    await user.save();
+       res.status(200).json({
+        message : 'Uploaded successfully'
+    })
+  }).end(buffer);
 })
 
 app.get('/share/:id',async (req,res) => {

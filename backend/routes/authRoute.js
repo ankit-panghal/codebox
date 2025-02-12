@@ -3,7 +3,9 @@ import isAuth from '../middlewares/isAuth.js'
 import validateCredentials from '../utils/validateCredentials.js'
 import userModel from '../models/userModel.js'
 import { decryptPass, encryptPass } from '../utils/encryptDecryptPass.js'
-import { generateToken } from '../utils/token.js'
+import { generateToken, verifyToken } from '../utils/token.js'
+import { sendMail } from '../utils/nodemailer.js'
+import 'dotenv/config'
 
 const authRouter = express.Router()
 
@@ -26,10 +28,11 @@ authRouter.post('/signup',async (req,res) => {
         } 
         const hashedPass = await encryptPass(password);
         await userModel.create({name,email,password : hashedPass}) 
-        const token = generateToken(email);
+        const token = generateToken(email,process.env.VERIFICATION_SECRET_KEY);
+        const verificationLink = `${process.env.FRONTEND_URL}/verify?token=${token}`;
+        await sendMail(verificationLink,email,name)
         return res.status(201).json({
-        message : 'User created successfully',
-        token
+        message : 'Please check your email to verify your account',
       })
    }
    catch(error){
@@ -40,17 +43,34 @@ authRouter.post('/signup',async (req,res) => {
    }
 });
 
+authRouter.get('/verify',async (req,res) => {
+    const token = req.query.token
+    try{
+       const decoded =  await verifyToken(token,process.env.VERIFICATION_SECRET_KEY)
+       const userEmail = decoded.user
+       await userModel.findOneAndUpdate({email :userEmail},{isVerified : true})
+        res.status(200).json({
+            message : 'Email verified successfully'
+        })
+    }
+    catch(err){
+        res.status(400).json({
+            message : 'Invalid token',
+            error : err
+        })
+    }
+})
+
 authRouter.post('/login',async (req,res) => {
     const {email,password} = req.body;
     
    try{
         await validateCredentials({email,password,mode : 'login'})
         const userExists = await userModel.findOne({email});
-        if(userExists){
-
-            const isMatchedPass = decryptPass(password,userExists.password);
+        if(userExists && userExists.isVerified){
+            const isMatchedPass = await decryptPass(password,userExists.password);
             if(isMatchedPass){
-                const token = generateToken(email);
+                const token = generateToken(email,process.env.LOGIN_SECRET_KEY);
                 return res.status(200).json({
                     message : 'User logged in successfully',
                     token
@@ -62,10 +82,18 @@ authRouter.post('/login',async (req,res) => {
                    })
             }
         }
+        else if(userExists && !userExists.isVerified){
+            const token = generateToken(email,process.env.VERIFICATION_SECRET_KEY);
+            const verificationLink = `${process.env.FRONTEND_URL}/verify?token=${token}`;
+            await sendMail(verificationLink,email,userExists.name)
+            return res.status(400).json({
+            message : 'Please verify your email'
+           })
+        }
         else{
             return res.status(400).json({
-            message : 'Incorrect email or password'
-           })
+                message : 'Incorrect email or password'
+            })
         }
    }
     catch(error){

@@ -1,14 +1,14 @@
 import jwt from 'jsonwebtoken'
 import 'dotenv/config'
 
-export function generateToken(user){
-const token = jwt.sign({user}, process.env.SECRET_KEY);
+export function generateToken(user,key){
+const token = jwt.sign({user}, key);
 return token;
 }
 
-export function verifyToken(token){
+export function verifyToken(token,key){
     return new Promise((resolve,reject) => {
-      jwt.verify(token, process.env.SECRET_KEY,(err,decoded) => {
+      jwt.verify(token, key,(err,decoded) => {
         if(err) reject(err);  
          else resolve(decoded);
     });
