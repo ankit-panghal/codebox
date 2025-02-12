@@ -50,21 +50,6 @@ app.post('/upload',isAuth,upload.single('image'), (req,res) => {
     if (error) {
       console.error(error);
       return res.status(500).json({ message: 'Error uploading image' });
-<<<<<<< HEAD
-    } 
-      const user = await userModel.findById(req.user._id);
-
-      if (user.imageUrl) {
-        const imagePublicId = user.imageUrl.split('/').slice(-3).join('/').split('.')[0];
-        await cloudinary.uploader.destroy(imagePublicId);
-    }
-
-    user.imageUrl = result.secure_url;
-    await user.save();
-       res.status(200).json({
-        message : 'Uploaded successfully'
-    })
-=======
     } else {
         (async function(){
             try{
@@ -84,7 +69,6 @@ app.post('/upload',isAuth,upload.single('image'), (req,res) => {
             }
         })()
     }
->>>>>>> 9d7d9085fa93cdd1e9fc651a16b09504a8bd19cd
   }).end(buffer);
 })
 
