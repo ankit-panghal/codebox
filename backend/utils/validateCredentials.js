@@ -18,11 +18,11 @@ const validateCredentials = ({name,email,password,mode}) => {
         if(typeof password !== 'string'){
             reject('Invalid Password format')
         }
-        if(password.length < 6){
-            reject('Password length should be greater than 5')
+        if(!validator.isStrongPassword(password)){
+            reject('Provide stronger password ')
         }
     }
-    else {
+    else if(mode === 'login') {
         if(!email || !password){
             reject('Missing Credentials');
         } 
@@ -32,12 +32,21 @@ const validateCredentials = ({name,email,password,mode}) => {
         if(typeof password !== 'string'){
             reject('Invalid Password format')
         }
-        if(password.length < 6){
-            reject('Password length should be greater than 5')
+        if(!validator.isStrongPassword(password)){
+            reject('Provide stronger password')
+        }
+    }
+    else {
+        if(typeof password !== 'string'){
+            reject('Invalid Password format')
+        }
+        if(!validator.isStrongPassword(password)){
+            reject('Provide stronger password')
         }
     }
     resolve();
    })
 }
+
 
 export default validateCredentials;

@@ -4,6 +4,7 @@ import arenaModel from '../models/arenaModel.js'
 import userModel from '../models/userModel.js';
 const dashboardRouter = express.Router()
 
+
 dashboardRouter.get('/',isAuth,async (req,res) => {
     const user = req.user;
     return res.status(200).json({
@@ -107,13 +108,27 @@ dashboardRouter.get('/get-arena/:id',isAuth,async (req,res) => {
 })
 
 
+dashboardRouter.post('/arena/change-arenaName',isAuth,async(req,res) => {
+    const {newName,arenaId} = req.body;
+    try{
+       await arenaModel.findByIdAndUpdate(arenaId,{arenaName : newName});
+       res.status(201).json({
+        message : 'Arena Name updated successfully'
+       })       
+    }
+    catch(err){
+        res.status(400).json({
+            message : err.message
+        })
+    }
+})
+
 dashboardRouter.post('/delete-arena',isAuth,async (req,res) => {
     const {id} = req.body;
     try{
-        
-    await arenaModel.findByIdAndDelete(id)
-    await userModel.findOneAndUpdate({_id : req.user._id},{$pull : {arenas : id}})
-    return res.status(200).json({
+        await arenaModel.findByIdAndDelete(id)
+        await userModel.findOneAndUpdate({_id : req.user._id},{$pull : {arenas : id}})
+        return res.status(200).json({
         message : 'Arena deleted successfully',
     })
     }
